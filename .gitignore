@@ -1,0 +1,127 @@
+############################
+# ===== JAVA / JVM =====
+############################
+*.class
+*.log
+hs_err_pid*
+replay_pid*
+
+############################
+# ===== BUILD OUTPUT =====
+############################
+target/
+build/
+out/
+.gradle/
+*.jar
+*.war
+*.ear
+*.nar
+
+############################
+# ===== IDE =====
+############################
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# IntelliJ cache (extra safety)
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+
+############################
+# ===== OS FILES =====
+############################
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+############################
+# ===== ENV / SECRETS =====
+############################
+.env
+.env.*
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+*.keystore
+
+# Cloud / OAuth credentials
+credentials.json
+firebase-adminsdk*.json
+aws-credentials
+
+############################
+# ===== SPRING BOOT CONFIG =====
+############################
+# Environment-specific config
+src/main/resources/application-prod.yml
+src/main/resources/application-prod.properties
+src/main/resources/application-dev.yml
+src/main/resources/application-dev.properties
+src/main/resources/application-local.yml
+src/main/resources/application-local.properties
+
+# Secret overrides
+application-secrets.yml
+application-secrets.properties
+
+############################
+# ===== EXTERNALIZED CONFIG =====
+############################
+config/application-*.yml
+config/application-*.properties
+
+############################
+# ===== DOCKER =====
+############################
+.env.docker
+docker-compose.override.yml
+
+############################
+# ===== CI / CD =====
+############################
+jenkins_home/
+*.pipeline
+
+############################
+# ===== TEST / COVERAGE =====
+############################
+coverage/
+jacoco/
+reports/
+
+############################
+# ===== TEMP / CACHE =====
+############################
+tmp/
+*.tmp
+*.bak
+
+############################
+# ===== FRONTEND (OPTIONAL) =====
+############################
+node_modules/
+dist/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+############################
+# ===== ARCHIVE FILES =====
+############################
+*.zip
+*.tar.gz
+*.rar
+
+############################
+# ===== MISC =====
+############################
+.mtj.tmp/
+*.ctxt
+.lombok
