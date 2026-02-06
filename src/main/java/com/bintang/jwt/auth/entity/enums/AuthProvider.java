@@ -1,4 +1,4 @@
-package com.bintang.jwt.auth.enums;
+package com.bintang.jwt.auth.entity.enums;
 
 public enum AuthProvider {
     LOCAL,

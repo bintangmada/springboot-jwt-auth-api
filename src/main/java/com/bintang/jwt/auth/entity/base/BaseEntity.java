@@ -1,4 +1,4 @@
-package com.bintang.jwt.auth.entity;
+package com.bintang.jwt.auth.entity.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
