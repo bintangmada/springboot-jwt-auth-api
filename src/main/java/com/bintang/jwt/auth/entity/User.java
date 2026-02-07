@@ -1,6 +1,7 @@
 package com.bintang.jwt.auth.entity;
 
-import com.bintang.jwt.auth.enums.AuthProvider;
+import com.bintang.jwt.auth.entity.base.BaseEntity;
+import com.bintang.jwt.auth.entity.enums.AuthProvider;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
