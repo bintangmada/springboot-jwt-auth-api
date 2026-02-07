@@ -126,7 +126,6 @@ pnpm-debug.log*
 *.ctxt
 .lombok
 
-
 ### STS ###
 .apt_generated
 .classpath
