@@ -9,6 +9,7 @@ public class SpringbootJwtAuthApiApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringbootJwtAuthApiApplication.class, args);
+		System.out.println("\nSERVER IS RUNNING");
 	}
 
 }
