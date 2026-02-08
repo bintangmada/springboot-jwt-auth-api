@@ -18,12 +18,17 @@ public class JwtUtil {
 
     private final String secret;
     private final long expiration;
+    private Key signingKey;
 
     @PostConstruct
     public void checkJwtSecretKey() {
         if (secret == null || secret.isBlank()) {
             throw new IllegalStateException("JWT secret is required");
         }
+
+        this.signingKey = Keys.hmacShaKeyFor(
+                secret.getBytes(StandardCharsets.UTF_8)
+        );
     }
 
     public JwtUtil(
@@ -34,29 +39,21 @@ public class JwtUtil {
         this.expiration = expiration;
     }
 
-    public String generateJwToken(UserDetails user) {
-        Key key = Keys.hmacShaKeyFor(
-                secret.getBytes(StandardCharsets.UTF_8)
-        );
-
+    public String generateToken(UserDetails user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String getUsernameFromToken(String token){
-        Key key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-
+    public String extractUsername(String token){
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(signingKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-
         return claims.getSubject();
-
     }
 }
