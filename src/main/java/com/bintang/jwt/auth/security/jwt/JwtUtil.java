@@ -33,7 +33,7 @@ public class JwtUtil {
         this.expiration = expiration;
     }
 
-    public String generateJwtToken(UserDetails user) {
+    public String generateJwToken(UserDetails user) {
         Key key = Keys.hmacShaKeyFor(
                 secret.getBytes(StandardCharsets.UTF_8)
         );
