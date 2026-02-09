@@ -2,6 +2,9 @@ package com.bintang.jwt.auth.service;
 
 import com.bintang.jwt.auth.dto.auth.AuthResponse;
 import com.bintang.jwt.auth.dto.auth.LoginRequest;
+import com.bintang.jwt.auth.dto.user.RegisterRequest;
+import com.bintang.jwt.auth.entity.User;
+import com.bintang.jwt.auth.entity.enums.AuthProvider;
 import com.bintang.jwt.auth.repository.UserRepository;
 import com.bintang.jwt.auth.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +38,22 @@ public class AuthService {
 
         return new AuthResponse(token);
 
+    }
+
+    public void register (RegisterRequest request){
+
+        if(userRepository.findByEmail(request.getEmail()).isPresent()){
+            throw new RuntimeException("Email already registered");
+        }
+
+        User user = User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .authProvider(AuthProvider.LOCAL)
+                .build();
+
+        userRepository.save(user);
     }
 
 }
