@@ -1,8 +1,9 @@
-package com.bintang.jwt.auth.security.user;
+package com.bintang.jwt.auth.security.oauth2;
 
+import com.bintang.jwt.auth.security.oauth2.OAuth2UserInfo;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-public class GoogleOauth2UserInfo implements OAuth2UserInfo{
+public class GoogleOauth2UserInfo implements OAuth2UserInfo {
 
     private final OAuth2User user;
 
