@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -28,16 +29,26 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             HttpServletResponse response,
             Authentication authentication
     ) throws IOException {
+        OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+
+        String provider = authToken.getAuthorizedClientRegistrationId();
+
         String email = oAuth2User.getAttribute("email");
+
+        if (email == null) {
+            throw new RuntimeException("Email not found from OAuth2 provider");
+        }
 
         User user = userRepository.findByEmail(email)
                 .orElseGet(() -> userRepository.save(
                         User.builder()
                                 .email(email)
                                 .name(oAuth2User.getAttribute("name"))
-                                .authProvider(AuthProvider.GOOGLE)
+                                .authProvider(AuthProvider.valueOf(provider.toUpperCase()))
                                 .providerId(oAuth2User.getName())
+                                .status(1L)
+                                .isDeleted(false)
                                 .build()
                 ));
 
