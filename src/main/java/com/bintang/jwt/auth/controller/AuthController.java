@@ -1,9 +1,14 @@
 package com.bintang.jwt.auth.controller;
 
+import com.bintang.jwt.auth.dto.auth.AuthResponse;
 import com.bintang.jwt.auth.dto.auth.LoginRequest;
+import com.bintang.jwt.auth.dto.user.RegisterRequest;
 import com.bintang.jwt.auth.security.jwt.JwtUtil;
+import com.bintang.jwt.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,15 +23,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
+    private final AuthService authService;
 
     @PostMapping("/login")
-    public String login(@RequestBody @Valid LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
+    }
 
-        Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-
-        return jwtUtil.generateToken((UserDetails) auth.getPrincipal());
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@RequestBody @Valid RegisterRequest request){
+        authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
