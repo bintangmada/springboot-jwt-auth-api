@@ -25,9 +25,7 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration configuration
-    ) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
