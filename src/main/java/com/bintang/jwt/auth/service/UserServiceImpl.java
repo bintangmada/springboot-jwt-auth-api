@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +44,13 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new RuntimeException("User is not found"));
+    }
+
+    public List<UserResponse> getAll(){
+        return userRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     @Transactional
