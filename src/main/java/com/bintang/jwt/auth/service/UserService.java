@@ -4,7 +4,7 @@ import com.bintang.jwt.auth.dto.user.RegisterRequest;
 import com.bintang.jwt.auth.dto.user.UserResponse;
 
 public interface UserService {
-    UserResponse createUser(RegisterRequest request);
+    UserResponse create(RegisterRequest request);
 
     void delete(Long id);
 
