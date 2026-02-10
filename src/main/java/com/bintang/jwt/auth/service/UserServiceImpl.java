@@ -1,6 +1,7 @@
 package com.bintang.jwt.auth.service;
 
 import com.bintang.jwt.auth.dto.user.RegisterRequest;
+import com.bintang.jwt.auth.dto.user.UpdateUserRequest;
 import com.bintang.jwt.auth.dto.user.UserResponse;
 import com.bintang.jwt.auth.entity.User;
 import com.bintang.jwt.auth.entity.enums.AuthProvider;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +45,24 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new RuntimeException("User is not found"));
+    }
+
+    public List<UserResponse> getAll(){
+        return userRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public UserResponse update(Long id, UpdateUserRequest request){
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User is not found"));
+
+        user.setName(request.getName());
+        
+        return toResponse(userRepository.save(user));
+
     }
 
     @Transactional
