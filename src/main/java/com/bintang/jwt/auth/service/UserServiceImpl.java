@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserResponse createUser(RegisterRequest request){
+    public UserResponse create(RegisterRequest request){
 
         if(userRepository.findByEmail(request.getEmail()).isPresent()){
             throw new RuntimeException("User is already exists");
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("User is not found"));
 
         user.setName(request.getName());
-        
+
         return toResponse(userRepository.save(user));
 
     }
