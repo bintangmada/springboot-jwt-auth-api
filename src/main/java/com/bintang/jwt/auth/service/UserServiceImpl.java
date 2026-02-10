@@ -1,6 +1,7 @@
 package com.bintang.jwt.auth.service;
 
 import com.bintang.jwt.auth.dto.user.RegisterRequest;
+import com.bintang.jwt.auth.dto.user.UpdateUserRequest;
 import com.bintang.jwt.auth.dto.user.UserResponse;
 import com.bintang.jwt.auth.entity.User;
 import com.bintang.jwt.auth.entity.enums.AuthProvider;
@@ -51,6 +52,17 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    public UserResponse update(Long id, UpdateUserRequest request){
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User is not found"));
+
+        user.setName(request.getName());
+        
+        return toResponse(userRepository.save(user));
+
     }
 
     @Transactional
