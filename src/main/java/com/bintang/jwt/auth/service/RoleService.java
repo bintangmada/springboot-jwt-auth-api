@@ -25,6 +25,15 @@ public class RoleService {
         return mapToRoleResponse(roleRepository.save(role));
     }
 
+    public RoleResponse update (Long id, RoleRequest request){
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        role.setName(request.getName());
+
+        return mapToRoleResponse(roleRepository.save(role));
+    }
+
     RoleResponse mapToRoleResponse(Role role) {
         return RoleResponse.builder()
                 .id(role.getId())
