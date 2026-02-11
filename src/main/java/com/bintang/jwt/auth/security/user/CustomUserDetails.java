@@ -1,57 +1,72 @@
 package com.bintang.jwt.auth.security.user;
 
 import com.bintang.jwt.auth.entity.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
+@Getter
 public class CustomUserDetails implements UserDetails {
 
-    private final User user;
+    private final Long userId;
+    private final String email;
+    private final String password;
+    private final boolean active;
+    private final Set<GrantedAuthority> authorities;
 
-    public CustomUserDetails(User user){
-        this.user = user;
-    }
+    public CustomUserDetails(
+            User user,
+            Set<String> roleNames,
+            Set<String> permissionNames) {
+        this.userId = user.getId();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.active = true;
 
-    public User getUser(){
-        return user;
-    }
+        Set<GrantedAuthority> auths = new HashSet<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities(){
-        return List.of();
-    }
+        roleNames.forEach(r -> auths.add(new SimpleGrantedAuthority("ROLE_" + r)));
+        permissionNames.forEach(p -> auths.add(new SimpleGrantedAuthority(p)));
 
-    @Override
-    public String getPassword(){
-        return user.getPassword();
-    }
-
-    @Override
-    public String getUsername(){
-        return user.getEmail();
-    }
-
-    @Override
-    public boolean isAccountNonExpired(){
-        return true;
+        this.authorities = Collections.unmodifiableSet(auths);
     }
 
     @Override
-    public boolean isAccountNonLocked(){
-        return true;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+//    @Override
+//    public String getPassword() {
+//        return user.getPassword();
+//    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     @Override
-    public boolean isCredentialsNonExpired(){
-        return true;
+    public boolean isAccountNonExpired() {
+        return active;
     }
 
     @Override
-    public boolean isEnabled(){
-        return !user.isDeleted();
+    public boolean isAccountNonLocked() {
+        return active;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return active;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return active;
     }
 
 }
