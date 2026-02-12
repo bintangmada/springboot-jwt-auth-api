@@ -1,4 +1,4 @@
-package com.bintang.jwt.auth.dto;
+package com.bintang.jwt.auth.dto.role;
 
 import lombok.Builder;
 import lombok.Data;

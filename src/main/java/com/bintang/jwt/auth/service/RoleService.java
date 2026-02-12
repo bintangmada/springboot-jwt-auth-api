@@ -1,11 +1,10 @@
 package com.bintang.jwt.auth.service;
 
-import com.bintang.jwt.auth.dto.RoleRequest;
-import com.bintang.jwt.auth.dto.RoleResponse;
+import com.bintang.jwt.auth.dto.role.RoleRequest;
+import com.bintang.jwt.auth.dto.role.RoleResponse;
 import com.bintang.jwt.auth.entity.Role;
 import com.bintang.jwt.auth.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
