@@ -23,6 +23,15 @@ public class PermissionService {
         return mapToResponse(permissionRepository.save(permission));
     }
 
+    public PermissionResponse update(Long id, PermissionRequest request){
+        Permission permission = permissionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Permission not found"));
+
+        permission.setName(request.getName());
+
+        return mapToResponse(permissionRepository.save(permission));
+    }
+
     PermissionResponse mapToResponse(Permission permission){
         return PermissionResponse.builder()
                 .id(permission.getId())
