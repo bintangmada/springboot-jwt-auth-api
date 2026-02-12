@@ -1,4 +1,4 @@
-package com.bintang.jwt.auth.dto;
+package com.bintang.jwt.auth.dto.role;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
