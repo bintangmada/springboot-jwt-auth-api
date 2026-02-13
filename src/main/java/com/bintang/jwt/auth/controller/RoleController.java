@@ -28,4 +28,12 @@ public class RoleController {
         return ResponseEntity.ok().body(roleService.getAll());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<RoleResponse> update(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody RoleRequest request)
+    {
+        return ResponseEntity.ok().body(roleService.update(id, request));
+    }
+
 }
