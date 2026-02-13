@@ -1,6 +1,7 @@
 package com.bintang.jwt.auth.service;
 
 import com.bintang.jwt.auth.entity.RolePermission;
+import com.bintang.jwt.auth.entity.UserPermission;
 import com.bintang.jwt.auth.entity.UserRole;
 import com.bintang.jwt.auth.repository.mapping.RolePermissionRepository;
 import com.bintang.jwt.auth.repository.mapping.UserPermissionRepository;
@@ -73,6 +74,18 @@ public class AccessService {
 
         rolePermissionRepository.save(rolePermission);
 
+    }
+
+    public void assignPermissionToUser(Long userId, Long permissionId){
+        if(userPermissionRepository.existsByUserIdAndPermissionId(userId, permissionId)){
+            throw new RuntimeException("Permission already assigned to user");
+        }
+
+        UserPermission mapping = new UserPermission();
+        mapping.setUserId(userId);
+        mapping.setPermissionId(permissionId);
+
+        userPermissionRepository.save(mapping);
     }
 
     public void trackingSoftDeleteRolePermission(RolePermission rolePermission) {
