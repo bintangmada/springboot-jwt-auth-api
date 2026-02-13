@@ -88,6 +88,21 @@ public class AccessService {
         userPermissionRepository.save(mapping);
     }
 
+    public void revokePermissionFromUser(Long userId, Long permissionId){
+        UserPermission userPermission = userPermissionRepository.findByUserIdAndPermissionId(userId, permissionId);
+
+        if(userPermission == null || userPermission.isDeleted()){
+            throw new RuntimeException("Permission is already revoked from this user");
+        }
+
+        userPermission.setStatus(0L);
+        userPermission.setDeleted(true);
+        userPermission.setDeletedAt(LocalDateTime.now());
+        userPermission.setDeletedBy(auth != null ? auth.getName() : "SYSTEM");
+
+        userPermissionRepository.save(userPermission);
+    }
+
     public void trackingSoftDeleteRolePermission(RolePermission rolePermission) {
         rolePermission.setStatus(0L);
         rolePermission.setDeleted(true);
