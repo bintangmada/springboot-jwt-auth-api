@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +32,14 @@ public class RoleService {
         return mapToRoleResponse(roleRepository.save(role));
     }
 
-    public RoleResponse update (Long id, RoleRequest request){
+    public List<RoleResponse> getAll() {
+        return roleRepository.findAll()
+                .stream()
+                .map(this::mapToRoleResponse)
+                .toList();
+    }
+
+    public RoleResponse update(Long id, RoleRequest request) {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
@@ -40,7 +48,7 @@ public class RoleService {
         return mapToRoleResponse(roleRepository.save(role));
     }
 
-    public void delete(Long id){
+    public void delete(Long id) {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
