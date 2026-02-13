@@ -5,6 +5,8 @@ import com.bintang.jwt.auth.dto.role.RoleResponse;
 import com.bintang.jwt.auth.entity.Role;
 import com.bintang.jwt.auth.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,7 @@ public class RoleService {
         return mapToRoleResponse(roleRepository.save(role));
     }
 
-    public RoleResponse findById(Long id){
+    public RoleResponse findById(Long id) {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Role is not found"));
 
@@ -45,6 +47,10 @@ public class RoleService {
                 .stream()
                 .map(this::mapToRoleResponse)
                 .toList();
+    }
+
+    Page<RoleResponse> getAllRolesPageable(Pageable pageable){
+        return roleRepository.findAll(pageable).map(this::mapToRoleResponse);
     }
 
     public RoleResponse update(Long id, RoleRequest request) {
