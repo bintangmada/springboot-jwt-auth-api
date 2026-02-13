@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,13 @@ public class RoleService {
         role.setName(request.getName());
 
         return mapToRoleResponse(roleRepository.save(role));
+    }
+
+    public RoleResponse findById(Long id){
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Role is not found"));
+
+        return mapToRoleResponse(role);
     }
 
     public List<RoleResponse> getAll() {

@@ -36,4 +36,9 @@ public class RoleController {
         return ResponseEntity.ok().body(roleService.update(id, request));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id){
+        roleService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }
