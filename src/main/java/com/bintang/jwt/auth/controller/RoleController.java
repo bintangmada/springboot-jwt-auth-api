@@ -1,0 +1,27 @@
+package com.bintang.jwt.auth.controller;
+
+import com.bintang.jwt.auth.dto.role.RoleRequest;
+import com.bintang.jwt.auth.dto.role.RoleResponse;
+import com.bintang.jwt.auth.service.RoleService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/roles")
+@RequiredArgsConstructor
+public class RoleController {
+
+    private final RoleService roleService;
+
+    PostMapping
+    public ResponseEntity<RoleResponse> create(@RequestBody @Valid RoleRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED).body(roleService.create(request));
+    }
+
+}
