@@ -22,8 +22,8 @@ public class AccessService {
 
     private final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-    public void assignRoleToUser(Long userId, Long roleId){
-        if(userRoleRepository.existsByUserIdAndRoleId(userId, roleId)){
+    public void assignRoleToUser(Long userId, Long roleId) {
+        if (userRoleRepository.existsByUserIdAndRoleId(userId, roleId)) {
             throw new RuntimeException("Role already assigned");
         }
 
@@ -34,10 +34,10 @@ public class AccessService {
         userRoleRepository.save(mapping);
     }
 
-    public void revokeRoleFromUser(Long userId, Long roleId){
+    public void revokeRoleFromUser(Long userId, Long roleId) {
 
-        if(!userRoleRepository.existsByUserIdAndRoleId(userId, roleId)){
-            throw new RuntimeException("Role is already revoke from this user");
+        if (!userRoleRepository.existsByUserIdAndRoleId(userId, roleId)) {
+            throw new RuntimeException("Role is already revoked from this user");
         }
 
         UserRole userRole = userRoleRepository.findByUserIdAndRoleId(userId, roleId);
@@ -50,8 +50,8 @@ public class AccessService {
 
     }
 
-    public void assignPermissionToRole(Long roleId, Long permissionId){
-        if(rolePermissionRepository.existsByRoleIdAndPermissionId(roleId, permissionId)){
+    public void assignPermissionToRole(Long roleId, Long permissionId) {
+        if (rolePermissionRepository.existsByRoleIdAndPermissionId(roleId, permissionId)) {
             throw new RuntimeException("Permission already assigned to role");
         }
 
@@ -60,5 +60,25 @@ public class AccessService {
         mapping.setPermissionId(permissionId);
 
         rolePermissionRepository.save(mapping);
+    }
+
+    public void revokePermissionFromRole(Long roleId, Long permissionId) {
+        RolePermission rolePermission = rolePermissionRepository.findByRoleIdAndPermissionId(roleId, permissionId);
+
+        if(rolePermission == null || rolePermission.isDeleted()){
+            throw new RuntimeException("Permission is already revoked from this role");
+        }
+
+        trackingSoftDeleteRolePermission(rolePermission);
+
+        rolePermissionRepository.save(rolePermission);
+
+    }
+
+    public void trackingSoftDeleteRolePermission(RolePermission rolePermission) {
+        rolePermission.setStatus(0L);
+        rolePermission.setDeleted(true);
+        rolePermission.setDeletedAt(LocalDateTime.now());
+        rolePermission.setDeletedBy(auth != null ? auth.getName() : "SYSTEM");
     }
 }
