@@ -30,5 +30,9 @@ public class AccessController {
         return ResponseEntity.ok().build();
     }
 
-
+    @DeleteMapping("/role-permission")
+    public ResponseEntity<Void> revokePermissionFromRole(@RequestParam Long roleId, @RequestParam Long permissionId) {
+        accessService.revokePermissionFromRole(roleId, permissionId);
+        return ResponseEntity.notFound().build();
+    }
 }
