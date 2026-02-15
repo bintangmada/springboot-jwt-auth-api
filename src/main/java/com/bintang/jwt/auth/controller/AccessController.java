@@ -35,4 +35,12 @@ public class AccessController {
         accessService.revokePermissionFromRole(roleId, permissionId);
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/user-permission")
+    public ResponseEntity<Void> assignPermissionToUser(@RequestParam Long userId, @RequestParam Long permissionId) {
+        accessService.assignPermissionToUser(userId, permissionId);
+        return ResponseEntity.ok().build();
+    }
+
+
 }
