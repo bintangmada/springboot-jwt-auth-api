@@ -15,7 +15,7 @@ public class AccessController {
     @PostMapping("/user-role")
     public ResponseEntity<Void> assignRoleToUser(@RequestParam Long userId, @RequestParam Long roleId) {
         accessService.assignRoleToUser(userId, roleId);
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/user-role")
@@ -23,4 +23,12 @@ public class AccessController {
         accessService.revokeRoleFromUser(userId, roleId);
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/role-permission")
+    public ResponseEntity<Void> assignPermissionToRole(@RequestParam Long roleId, @RequestParam Long permissionId) {
+        accessService.assignPermissionToRole(roleId, permissionId);
+        return ResponseEntity.ok().build();
+    }
+
+
 }
