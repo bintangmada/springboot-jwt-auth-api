@@ -17,4 +17,10 @@ public class AccessController {
         accessService.assignRoleToUser(userId, roleId);
         return ResponseEntity.notFound().build();
     }
+
+    @DeleteMapping("/user-role")
+    public ResponseEntity<Void> revokeRoleFromUser(@RequestParam Long userId, @RequestParam Long roleId) {
+        accessService.revokeRoleFromUser(userId, roleId);
+        return ResponseEntity.notFound().build();
+    }
 }
