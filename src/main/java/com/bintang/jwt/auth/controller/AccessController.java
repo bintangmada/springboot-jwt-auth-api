@@ -42,5 +42,10 @@ public class AccessController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/user-permission")
+    public ResponseEntity<Void> revokePermissionFromUser(@RequestParam Long userId, @RequestParam Long permissionId) {
+        accessService.revokePermissionFromUser(userId, permissionId);
+        return ResponseEntity.notFound().build();
+    }
 
 }
