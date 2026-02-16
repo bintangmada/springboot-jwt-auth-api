@@ -3,6 +3,7 @@ package com.bintang.jwt.auth.service;
 import com.bintang.jwt.auth.dto.auth.AuthResponse;
 import com.bintang.jwt.auth.dto.auth.LoginRequest;
 import com.bintang.jwt.auth.dto.user.RegisterRequest;
+import com.bintang.jwt.auth.entity.RefreshToken;
 import com.bintang.jwt.auth.entity.Role;
 import com.bintang.jwt.auth.entity.User;
 import com.bintang.jwt.auth.entity.enums.AuthProvider;
@@ -31,6 +32,7 @@ public class AuthService {
     private final RoleRepository roleRepository;
 
     private static final String DEFAULT_ROLE_NAME = "ROLE_USER";
+    private final RefreshTokenService refreshTokenService;
 
     public AuthResponse login(LoginRequest request) {
 
@@ -49,9 +51,10 @@ public class AuthService {
         );
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtUtil.generateToken(userDetails);
+        String accessToken = jwtUtil.generateToken(userDetails);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
 
-        return new AuthResponse(token);
+        return new AuthResponse(accessToken, refreshToken.getToken());
 
     }
 
