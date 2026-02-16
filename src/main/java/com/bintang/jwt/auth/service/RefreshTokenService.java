@@ -35,4 +35,12 @@ public class RefreshTokenService {
 
     }
 
+    public RefreshToken verifyExpiration(RefreshToken token){
+        if(token.getExpiryDate().isBefore(Instant.now())){
+            refreshTokenRepository.delete(token);
+            throw new RuntimeException("Refresh token expired");
+        }
+        return token;
+    }
+
 }
