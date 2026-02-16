@@ -3,10 +3,13 @@ package com.bintang.jwt.auth.service;
 import com.bintang.jwt.auth.dto.auth.AuthResponse;
 import com.bintang.jwt.auth.dto.auth.LoginRequest;
 import com.bintang.jwt.auth.dto.user.RegisterRequest;
+import com.bintang.jwt.auth.entity.Role;
 import com.bintang.jwt.auth.entity.User;
 import com.bintang.jwt.auth.entity.enums.AuthProvider;
+import com.bintang.jwt.auth.repository.RoleRepository;
 import com.bintang.jwt.auth.repository.UserRepository;
 import com.bintang.jwt.auth.security.jwt.JwtUtil;
+import jakarta.persistence.Access;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +27,19 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
+    private final AccessService accessService;
+    private final RoleRepository roleRepository;
+
+    private static final String DEFAULT_ROLE_NAME = "ROLE_USER";
+
     public AuthResponse login(LoginRequest request) {
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!"LOCAL".equals(user.getProviderId())) {
+            throw new RuntimeException("Please login using " + user.getAuthProvider());
+        }
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -40,9 +55,9 @@ public class AuthService {
 
     }
 
-    public void register (RegisterRequest request){
+    public void register(RegisterRequest request) {
 
-        if(userRepository.findByEmail(request.getEmail()).isPresent()){
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
 
@@ -50,10 +65,19 @@ public class AuthService {
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .authProvider(AuthProvider.LOCAL)
+                .authProvider("LOCAL")
+                .providerId(null)
+                .status(1L)
+                .isDeleted(false)
                 .build();
 
         userRepository.save(user);
+
+        Role defaultRole = roleRepository.findByNameAndIsDeletedFalse(DEFAULT_ROLE_NAME);
+        if (defaultRole == null) {
+            throw new RuntimeException("Default role USER not found");
+        }
+        accessService.assignRoleToUser(user.getId(), defaultRole.getId());
     }
 
 }
