@@ -2,9 +2,13 @@ package com.bintang.jwt.auth.controller;
 
 import com.bintang.jwt.auth.dto.auth.AuthResponse;
 import com.bintang.jwt.auth.dto.auth.LoginRequest;
+import com.bintang.jwt.auth.dto.auth.RefreshTokenRequest;
 import com.bintang.jwt.auth.dto.user.RegisterRequest;
+import com.bintang.jwt.auth.entity.RefreshToken;
 import com.bintang.jwt.auth.security.jwt.JwtUtil;
+import com.bintang.jwt.auth.security.user.CustomUserDetails;
 import com.bintang.jwt.auth.service.AuthService;
+import com.bintang.jwt.auth.service.RefreshTokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final RefreshTokenService refreshTokenService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest request) {
@@ -34,5 +40,18 @@ public class AuthController {
     public ResponseEntity<Void> register(@RequestBody @Valid RegisterRequest request){
         authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest request){
+        RefreshToken token = refreshTokenService.findByToken(request.getRefreshToken());
+
+        refreshTokenService.verifyExpiration(token);
+
+        String accessToken = jwtUtil.generateToken(new CustomUserDetails(token.getUser()));
+
+        AuthResponse authResponse = new AuthResponse(accessToken, request.getRefreshToken());
+
+        return ResponseEntity.ok(authResponse);
     }
 }

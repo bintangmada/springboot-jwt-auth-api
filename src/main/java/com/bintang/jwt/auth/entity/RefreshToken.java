@@ -24,6 +24,8 @@ public class RefreshToken extends BaseEntity{
 
     private Instant expiryDate;
 
-    private Long userId;
+    // private Long userId;
+    @ManyToOne
+    private User user;
 
 }

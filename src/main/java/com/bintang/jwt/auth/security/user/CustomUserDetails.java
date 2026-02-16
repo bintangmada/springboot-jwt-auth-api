@@ -34,6 +34,14 @@ public class CustomUserDetails implements UserDetails {
         this.authorities = Collections.unmodifiableSet(auths);
     }
 
+    public CustomUserDetails(User user) {
+        this.userId = user.getId();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.active = true;
+        this.authorities = new HashSet<>();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
