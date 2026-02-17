@@ -7,13 +7,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class CookieUtil {
 
-    public String getRefreshToken(HttpServletRequest request){
+    private static final String REFRESH_TOKEN_COOKIE = "refreshToken";
+
+    public String extractRefreshToken(HttpServletRequest request){
         if(request.getCookies() == null){
             return null;
         }
 
         for(Cookie cookie : request.getCookies()){
-            if("refreshToken".equals(cookie.getName())){
+            if(REFRESH_TOKEN_COOKIE.equals(cookie.getName())){
                 return cookie.getValue();
             }
         }
