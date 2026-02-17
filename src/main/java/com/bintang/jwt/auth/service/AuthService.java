@@ -1,6 +1,7 @@
 package com.bintang.jwt.auth.service;
 
 import com.bintang.jwt.auth.dto.auth.AuthResponse;
+import com.bintang.jwt.auth.dto.auth.AuthResult;
 import com.bintang.jwt.auth.dto.auth.LoginRequest;
 import com.bintang.jwt.auth.dto.user.RegisterRequest;
 import com.bintang.jwt.auth.entity.RefreshToken;
@@ -18,9 +19,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
@@ -34,7 +37,7 @@ public class AuthService {
     private static final String DEFAULT_ROLE_NAME = "ROLE_USER";
     private final RefreshTokenService refreshTokenService;
 
-    public AuthResponse login(LoginRequest request) {
+    public AuthResult login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -54,10 +57,11 @@ public class AuthService {
         String accessToken = jwtUtil.generateToken(userDetails);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
 
-        return new AuthResponse(accessToken, refreshToken.getToken());
+        return new AuthResult(accessToken, refreshToken.getToken());
 
     }
 
+    @Transactional
     public void register(RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {

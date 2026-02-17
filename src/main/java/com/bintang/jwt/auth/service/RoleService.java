@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,12 +18,14 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RoleService {
 
     private final RoleRepository roleRepository;
 
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+    @Transactional
     public RoleResponse create(RoleRequest request) {
 
         if (roleRepository.existsByName(request.getName())) {
@@ -31,8 +34,9 @@ public class RoleService {
 
         Role role = new Role();
         role.setName(request.getName());
+        Role savedRole = roleRepository.save(role);
 
-        return mapToRoleResponse(roleRepository.save(role));
+        return mapToRoleResponse(savedRole);
     }
 
     public RoleResponse findById(Long id) {
