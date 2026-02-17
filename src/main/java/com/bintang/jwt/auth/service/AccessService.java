@@ -31,6 +31,8 @@ public class AccessService {
         UserRole mapping = new UserRole();
         mapping.setUserId(userId);
         mapping.setRoleId(roleId);
+        mapping.setDeleted(false);
+        mapping.setStatus(1L);
 
         userRoleRepository.save(mapping);
     }
