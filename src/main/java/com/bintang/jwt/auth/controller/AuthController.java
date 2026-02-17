@@ -9,6 +9,8 @@ import com.bintang.jwt.auth.security.jwt.JwtUtil;
 import com.bintang.jwt.auth.security.user.CustomUserDetails;
 import com.bintang.jwt.auth.service.AuthService;
 import com.bintang.jwt.auth.service.RefreshTokenService;
+import com.bintang.jwt.auth.util.CookieUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,7 @@ public class AuthController {
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
     private final JwtUtil jwtUtil;
+    private final CookieUtil cookieUtil;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest request) {
@@ -56,8 +59,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public void logout(@RequestBody RefreshTokenRequest request){
-        refreshTokenService.delete(request.getRefreshToken());
+    public void logout(HttpServletRequest request){
+        String refreshToken = cookieUtil.extractRefreshToken(request);
+        refreshTokenService.delete(refreshToken);
     }
 
 }
