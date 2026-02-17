@@ -1,6 +1,7 @@
 package com.bintang.jwt.auth.controller;
 
 import com.bintang.jwt.auth.dto.auth.AuthResponse;
+import com.bintang.jwt.auth.dto.auth.AuthResult;
 import com.bintang.jwt.auth.dto.auth.LoginRequest;
 import com.bintang.jwt.auth.dto.auth.RefreshTokenRequest;
 import com.bintang.jwt.auth.dto.user.RegisterRequest;
@@ -10,6 +11,7 @@ import com.bintang.jwt.auth.security.user.CustomUserDetails;
 import com.bintang.jwt.auth.service.AuthService;
 import com.bintang.jwt.auth.service.RefreshTokenService;
 import com.bintang.jwt.auth.util.CookieUtil;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -37,7 +39,18 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
-        return ResponseEntity.ok(authService.login(request));
+        AuthResult authResult = authService.login(request);
+
+        // Save refresh token to cookie
+        Cookie cookie = new Cookie("refreshToken", authResult.getRefreshToken());
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(7 * 24 * 60 * 60);
+
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok(new AuthResponse(authResult.getAccessToken()));
     }
 
     @PostMapping("/register")
@@ -47,14 +60,14 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<AuthResult> refreshToken(@RequestBody RefreshTokenRequest request) {
         RefreshToken token = refreshTokenService.findByToken(request.getRefreshToken());
 
         refreshTokenService.verifyExpiration(token);
 
         String accessToken = jwtUtil.generateToken(new CustomUserDetails(token.getUser()));
 
-        AuthResponse authResponse = new AuthResponse(accessToken, request.getRefreshToken());
+        AuthResult authResponse = new AuthResult(accessToken, request.getRefreshToken());
 
         return ResponseEntity.ok(authResponse);
     }
@@ -63,7 +76,7 @@ public class AuthController {
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = cookieUtil.extractRefreshTokenFromCookie(request);
 
-        if(refreshToken != null) {
+        if (refreshToken != null) {
             refreshTokenService.delete(refreshToken);
         }
 
