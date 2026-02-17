@@ -11,6 +11,7 @@ import com.bintang.jwt.auth.service.AuthService;
 import com.bintang.jwt.auth.service.RefreshTokenService;
 import com.bintang.jwt.auth.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,18 +36,18 @@ public class AuthController {
     private final CookieUtil cookieUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
         return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody @Valid RegisterRequest request){
+    public ResponseEntity<Void> register(@RequestBody @Valid RegisterRequest request) {
         authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest request){
+    public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         RefreshToken token = refreshTokenService.findByToken(request.getRefreshToken());
 
         refreshTokenService.verifyExpiration(token);
@@ -59,9 +60,16 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public void logout(HttpServletRequest request){
-        String refreshToken = cookieUtil.extractRefreshToken(request);
-        refreshTokenService.delete(refreshToken);
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = cookieUtil.extractRefreshTokenFromCookie(request);
+
+        if(refreshToken != null) {
+            refreshTokenService.delete(refreshToken);
+        }
+
+        cookieUtil.clearRefreshTokenCookie(response);
+
+        return ResponseEntity.ok("Logout success");
     }
 
 }
