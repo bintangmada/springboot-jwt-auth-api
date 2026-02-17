@@ -42,7 +42,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!"LOCAL".equals(user.getProviderId())) {
+        if (!"LOCAL".equals(user.getAuthProvider())) {
             throw new RuntimeException("Please login using " + user.getAuthProvider());
         }
 
@@ -78,12 +78,20 @@ public class AuthService {
                 .isDeleted(false)
                 .build();
 
-        userRepository.save(user);
+        user = userRepository.save(user);
 
         Role defaultRole = roleRepository.findByNameAndIsDeletedFalse(DEFAULT_ROLE_NAME);
         if (defaultRole == null) {
-            throw new RuntimeException("Default role USER not found");
+
+            defaultRole = Role.builder()
+                    .name(DEFAULT_ROLE_NAME)
+                    .isDeleted(false)
+                    .status(1L)
+                    .build();
+
+            defaultRole = roleRepository.save(defaultRole);
         }
+
         accessService.assignRoleToUser(user.getId(), defaultRole.getId());
     }
 
