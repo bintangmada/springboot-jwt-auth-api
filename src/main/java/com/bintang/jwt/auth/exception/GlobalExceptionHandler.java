@@ -48,6 +48,18 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAll(
+            Exception ex,
+            HttpServletRequest request
+    ) {
+        return buildError(
+                "Internal server error",
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                request
+        );
+    }
+
     private ResponseEntity<ErrorResponse> buildError(
             String message,
             HttpStatus status,
