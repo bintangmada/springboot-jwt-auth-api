@@ -17,6 +17,7 @@ import com.bintang.jwt.auth.security.jwt.JwtUtil;
 import jakarta.persistence.Access;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,18 +50,25 @@ public class AuthService {
             throw new BadRequestException("Please login using " + user.getAuthProvider());
         }
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String accessToken = jwtUtil.generateToken(userDetails);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        return new AuthResult(accessToken, refreshToken.getToken());
+            String accessToken = jwtUtil.generateToken(userDetails);
+            RefreshToken refreshToken =
+                    refreshTokenService.createRefreshToken(userDetails.getUsername());
+
+            return new AuthResult(accessToken, refreshToken.getToken());
+
+        } catch (BadCredentialsException ex) {
+            throw new BadRequestException("Invalid email or password");
+        }
 
     }
 
