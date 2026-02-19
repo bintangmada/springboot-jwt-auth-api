@@ -3,6 +3,8 @@ package com.bintang.jwt.auth.service;
 import com.bintang.jwt.auth.entity.RolePermission;
 import com.bintang.jwt.auth.entity.UserPermission;
 import com.bintang.jwt.auth.entity.UserRole;
+import com.bintang.jwt.auth.exception.ConflictException;
+import com.bintang.jwt.auth.exception.ResourceNotFoundException;
 import com.bintang.jwt.auth.repository.mapping.RolePermissionRepository;
 import com.bintang.jwt.auth.repository.mapping.UserPermissionRepository;
 import com.bintang.jwt.auth.repository.mapping.UserRoleRepository;
@@ -25,7 +27,7 @@ public class AccessService {
 
     public void assignRoleToUser(Long userId, Long roleId) {
         if (userRoleRepository.existsByUserIdAndRoleId(userId, roleId)) {
-            throw new RuntimeException("Role already assigned");
+            throw new ConflictException("Role already assigned to user");
         }
 
         UserRole mapping = new UserRole();
@@ -40,7 +42,7 @@ public class AccessService {
     public void revokeRoleFromUser(Long userId, Long roleId) {
 
         if (!userRoleRepository.existsByUserIdAndRoleId(userId, roleId)) {
-            throw new RuntimeException("Role is already revoked from this user");
+            throw new ResourceNotFoundException("Role not assigned to user");
         }
 
         UserRole userRole = userRoleRepository.findByUserIdAndRoleId(userId, roleId);
@@ -55,7 +57,7 @@ public class AccessService {
 
     public void assignPermissionToRole(Long roleId, Long permissionId) {
         if (rolePermissionRepository.existsByRoleIdAndPermissionId(roleId, permissionId)) {
-            throw new RuntimeException("Permission already assigned to role");
+            throw new ConflictException("Permission already assigned to role");
         }
 
         RolePermission mapping = new RolePermission();
@@ -69,7 +71,7 @@ public class AccessService {
         RolePermission rolePermission = rolePermissionRepository.findByRoleIdAndPermissionId(roleId, permissionId);
 
         if(rolePermission == null || rolePermission.isDeleted()){
-            throw new RuntimeException("Permission is already revoked from this role");
+            throw new ResourceNotFoundException("Permission not assigned to role");
         }
 
         trackingSoftDeleteRolePermission(rolePermission);
@@ -80,7 +82,7 @@ public class AccessService {
 
     public void assignPermissionToUser(Long userId, Long permissionId){
         if(userPermissionRepository.existsByUserIdAndPermissionId(userId, permissionId)){
-            throw new RuntimeException("Permission already assigned to user");
+            throw new ConflictException("Permission already assigned to user");
         }
 
         UserPermission mapping = new UserPermission();
@@ -94,7 +96,7 @@ public class AccessService {
         UserPermission userPermission = userPermissionRepository.findByUserIdAndPermissionId(userId, permissionId);
 
         if(userPermission == null || userPermission.isDeleted()){
-            throw new RuntimeException("Permission is already revoked from this user");
+            throw new ResourceNotFoundException("Permission not assigned to user");
         }
 
         userPermission.setStatus(0L);
