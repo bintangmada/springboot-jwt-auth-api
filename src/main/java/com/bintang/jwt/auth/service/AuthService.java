@@ -8,6 +8,9 @@ import com.bintang.jwt.auth.entity.RefreshToken;
 import com.bintang.jwt.auth.entity.Role;
 import com.bintang.jwt.auth.entity.User;
 import com.bintang.jwt.auth.entity.enums.AuthProvider;
+import com.bintang.jwt.auth.exception.BadRequestException;
+import com.bintang.jwt.auth.exception.ConflictException;
+import com.bintang.jwt.auth.exception.ResourceNotFoundException;
 import com.bintang.jwt.auth.repository.RoleRepository;
 import com.bintang.jwt.auth.repository.UserRepository;
 import com.bintang.jwt.auth.security.jwt.JwtUtil;
@@ -40,10 +43,10 @@ public class AuthService {
     public AuthResult login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!"LOCAL".equals(user.getAuthProvider())) {
-            throw new RuntimeException("Please login using " + user.getAuthProvider());
+            throw new BadRequestException("Please login using " + user.getAuthProvider());
         }
 
         Authentication authentication = authenticationManager.authenticate(
@@ -65,7 +68,7 @@ public class AuthService {
     public void register(RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already registered");
+            throw new ConflictException("Email already registered");
         }
 
         User user = User.builder()
