@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface RolePermissionRepository extends JpaRepository<RolePermission, Long> {
 
@@ -16,4 +17,10 @@ public interface RolePermissionRepository extends JpaRepository<RolePermission, 
 
     @Query(value = "SELECT DISTINCT p.name FROM permissions p JOIN role_permission rp ON rp.permission_id = p.id JOIN user_roles ur ON ur.role_id = rp_role_id WHERE ur_user_id = :userId", nativeQuery = true)
     List<String> findPermissionNamesByUserId(@Param("userId") Long userId);
+
+    @Query(value = "select rp.permission.name " +
+            "from RolePermission rp " +
+            "where rp.role.id in :roleIds and rp.isDeleted = false", nativeQuery = true)
+    List<String> findPermissionNamesByRoleIds(Set<Long> roleIds);
+
 }

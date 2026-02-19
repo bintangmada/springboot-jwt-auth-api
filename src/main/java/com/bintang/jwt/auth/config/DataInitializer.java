@@ -41,7 +41,7 @@ public class DataInitializer {
                 );
             }
 
-            // assign permission ke role kalau belum ada
+            // assign permission to role if not exists yet
             if (!rolePermRepo.existsByRoleIdAndPermissionId(userRole.getId(), readProfile.getId())) {
 
                 RolePermission rolePermission = RolePermission.builder()
