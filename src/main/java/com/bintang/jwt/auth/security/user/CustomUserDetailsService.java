@@ -44,20 +44,25 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private CustomUserDetails buildUserDetails(User user) {
 
-        Set<String> roles = new HashSet<>(userRoleRepository.findRoleNamesByUserId(user.getId()));
-        Set<String> rolePermissions = new HashSet<>(rolePermissionRepository.findPermissionNamesByUserId(user.getId()));
-        Set<String> directPermissions = new HashSet<>(userPermissionRepository.findPermissionNamesByUserId(user.getId()));
+        Set<String> roles =
+                new HashSet<>(userRoleRepository.findRoleNamesByUserId(user.getId()));
+
+        Set<Long> roleIds =
+                new HashSet<>(userRoleRepository.findRoleIdsByUserId(user.getId()));
+
+        Set<String> rolePermissions =
+                new HashSet<>(rolePermissionRepository.findPermissionNamesByRoleIds(roleIds));
+
+        Set<String> directPermissions =
+                new HashSet<>(userPermissionRepository.findPermissionNamesByUserId(user.getId()));
 
         Set<String> finalPermissions = new HashSet<>();
         finalPermissions.addAll(rolePermissions);
         finalPermissions.addAll(directPermissions);
 
-        return new CustomUserDetails(
-                user,
-                roles,
-                finalPermissions
-        );
+        return new CustomUserDetails(user, roles, finalPermissions);
     }
+
 
 
 }
