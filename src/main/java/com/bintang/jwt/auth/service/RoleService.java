@@ -3,6 +3,8 @@ package com.bintang.jwt.auth.service;
 import com.bintang.jwt.auth.dto.role.RoleRequest;
 import com.bintang.jwt.auth.dto.role.RoleResponse;
 import com.bintang.jwt.auth.entity.Role;
+import com.bintang.jwt.auth.exception.ConflictException;
+import com.bintang.jwt.auth.exception.ResourceNotFoundException;
 import com.bintang.jwt.auth.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,31 +25,33 @@ public class RoleService {
 
     private final RoleRepository roleRepository;
 
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    private String currentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null ? auth.getName() : "SYSTEM";
+    }
 
-    @Transactional
     public RoleResponse create(RoleRequest request) {
 
-        if (roleRepository.existsByName(request.getName())) {
-            throw new RuntimeException("Role already exists");
+        if (roleRepository.existsByNameAndIsDeletedFalse(request.getName())) {
+            throw new ConflictException("Role already exists");
         }
 
         Role role = new Role();
         role.setName(request.getName());
-        Role savedRole = roleRepository.save(role);
+        role.setStatus(1L);
+        role.setDeleted(false);
 
-        return mapToRoleResponse(savedRole);
+        return mapToRoleResponse(roleRepository.save(role));
     }
-
     public RoleResponse findById(Long id) {
-        Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Role is not found"));
+        Role role = roleRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
         return mapToRoleResponse(role);
     }
 
     public List<RoleResponse> getAll() {
-        return roleRepository.findAll()
+        return roleRepository.findAllByIsDeletedFalse()
                 .stream()
                 .map(this::mapToRoleResponse)
                 .toList();
@@ -58,8 +62,14 @@ public class RoleService {
     }
 
     public RoleResponse update(Long id, RoleRequest request) {
-        Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        Role role = roleRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+
+        if (!role.getName().equals(request.getName())
+                && roleRepository.existsByNameAndIsDeletedFalse(request.getName())) {
+            throw new ConflictException("Role name already used");
+        }
 
         role.setName(request.getName());
 
@@ -67,16 +77,19 @@ public class RoleService {
     }
 
     public void delete(Long id) {
-        Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        Role role = roleRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
         role.setStatus(0L);
-        role.setDeletedAt(LocalDateTime.now());
         role.setDeleted(true);
-        role.setDeletedBy(auth != null ? auth.getName() : "SYSTEM");
+        role.setDeletedAt(LocalDateTime.now());
+        role.setDeletedBy(currentUser());
+
+        roleRepository.save(role);
     }
 
-    RoleResponse mapToRoleResponse(Role role) {
+    private RoleResponse mapToRoleResponse(Role role) {
         return RoleResponse.builder()
                 .id(role.getId())
                 .name(role.getName())
