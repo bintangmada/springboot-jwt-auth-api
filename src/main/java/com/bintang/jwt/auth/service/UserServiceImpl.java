@@ -5,6 +5,8 @@ import com.bintang.jwt.auth.dto.user.UpdateUserRequest;
 import com.bintang.jwt.auth.dto.user.UserResponse;
 import com.bintang.jwt.auth.entity.User;
 import com.bintang.jwt.auth.entity.enums.AuthProvider;
+import com.bintang.jwt.auth.exception.ConflictException;
+import com.bintang.jwt.auth.exception.ResourceNotFoundException;
 import com.bintang.jwt.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -25,41 +27,61 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserResponse create(RegisterRequest request){
+    private String currentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null ? auth.getName() : "SYSTEM";
+    }
 
-        if(userRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new RuntimeException("User is already exists");
+    public UserResponse create(RegisterRequest request) {
+
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new ConflictException("User already exists");
         }
 
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .providerId(AuthProvider.LOCAL.toString())
+                .authProvider("LOCAL")
+                .providerId(null)
+                .status(1L)
+                .isDeleted(false)
                 .build();
 
         return toResponse(userRepository.save(user));
     }
 
-    public UserResponse getById(Long id){
+    public UserResponse getById(Long id) {
         return userRepository.findById(id)
                 .map(this::toResponse)
-                .orElseThrow(() -> new RuntimeException("User is not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
-    public List<UserResponse> getAll(){
+    public List<UserResponse> getAll() {
         return userRepository.findAll()
                 .stream()
                 .map(this::toResponse)
                 .toList();
     }
 
-    public UserResponse update(Long id, UpdateUserRequest request){
+    public UserResponse update(Long id, UpdateUserRequest request) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User is not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        user.setName(request.getName());
+        if (request.getEmail() != null
+                && !request.getEmail().equals(user.getEmail())
+                && userRepository.existsByEmailAndIsDeletedFalse(request.getEmail())) {
+            throw new ConflictException("Email already used");
+        }
+
+        if (request.getName() != null) {
+            user.setName(request.getName());
+        }
+
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
+        }
 
         return toResponse(userRepository.save(user));
 
@@ -67,16 +89,16 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void delete(Long id){
+    public void delete(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         user.setStatus(0L);
         user.setDeleted(true);
         user.setDeletedAt(LocalDateTime.now());
-        user.setDeletedBy(auth != null ? auth.getName() : "SYSTEM");
+        user.setDeletedBy(currentUser());
 
         userRepository.save(user);
     }
@@ -86,7 +108,7 @@ public class UserServiceImpl implements UserService {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
-                .provider(user.getProviderId())
+                .provider(user.getAuthProvider())
                 .build();
     }
 
