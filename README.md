@@ -19,3 +19,20 @@ This project is a secure REST API for authentication and authorization using:
 Designed to reflect real-world backend architecture used in enterprise applications.
 
 ---
+
+# ✨ Features
+
+✅ User Registration & Login  
+✅ JWT Access Token Authentication  
+✅ Refresh Token Rotation Strategy  
+✅ HttpOnly Secure Cookie Storage  
+✅ Role Management  
+✅ Permission Management  
+✅ Assign Role to User  
+✅ Assign Permission to Role  
+✅ Assign Direct Permission to User  
+✅ Soft Delete with Audit Trail  
+✅ Global Error Handling  
+✅ Production-ready Security Flow
+
+---
