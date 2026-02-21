@@ -51,3 +51,12 @@ Designed to reflect real-world backend architecture used in enterprise applicati
 6. Client stores access token in memory
 
 ---
+
+## 🔁 Refresh Token Process
+
+1. Client calls refresh endpoint
+2. Server extracts refresh token from cookie
+3. Token is validated in database
+4. If valid → new access token is generated
+
+---
