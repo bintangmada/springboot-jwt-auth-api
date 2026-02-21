@@ -60,3 +60,10 @@ Designed to reflect real-world backend architecture used in enterprise applicati
 4. If valid → new access token is generated
 
 ---
+
+## 🚪 Logout Process
+
+1. Server deletes refresh token from database
+2. Server clears refresh token cookie
+
+---
