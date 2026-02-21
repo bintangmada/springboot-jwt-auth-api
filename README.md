@@ -36,3 +36,18 @@ Designed to reflect real-world backend architecture used in enterprise applicati
 ✅ Production-ready Security Flow
 
 ---
+
+# 🧠 Authentication Flow
+
+## 🔐 Login Process
+
+1. User submits email and password
+2. Spring Security authenticates credentials
+3. Server generates:
+    - Access Token (JWT)
+    - Refresh Token (stored in database)
+4. Refresh token is sent via HttpOnly Cookie
+5. Access token is returned in response body
+6. Client stores access token in memory
+
+---
