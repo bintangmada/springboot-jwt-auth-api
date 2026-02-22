@@ -135,3 +135,19 @@ Authorization: Bearer <access_token>
 - Not accessible via JavaScript
 
 ---
+
+# 🍪 Cookie Security
+
+Refresh token cookie configuration:
+
+- HttpOnly = true
+- Secure = true (enable in HTTPS)
+- SameSite = Strict
+- Path = /api/auth
+
+Purpose:
+- Prevent XSS attacks
+- Prevent token theft
+- Restrict token access to backend only
+
+---
