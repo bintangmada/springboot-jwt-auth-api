@@ -67,3 +67,18 @@ Designed to reflect real-world backend architecture used in enterprise applicati
 2. Server clears refresh token cookie
 
 ---
+
+# 🛡️ Authorization Model (RBAC)
+
+## 👤 User
+A user can have:
+- Multiple roles
+- Direct permissions
+
+## 🧩 Role
+A role contains multiple permissions.
+
+## 🔐 Permission
+Permission controls access to API endpoints.
+
+---
