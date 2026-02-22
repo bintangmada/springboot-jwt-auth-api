@@ -127,3 +127,11 @@ Example:
 ```
 Authorization: Bearer <access_token>
 ```
+
+## Refresh Token
+- Long lifetime
+- Stored in database
+- Sent via HttpOnly Cookie
+- Not accessible via JavaScript
+
+---
