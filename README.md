@@ -94,3 +94,24 @@ Role Permissions
 Permissions are loaded during authentication in CustomUserDetailsService.
 
 ---
+
+# 🏗️ Project Structure
+
+```
+com.bintang.jwt.auth
+│
+├── config
+├── controller
+├── dto
+├── entity
+├── exception
+├── repository
+├── security
+│   ├── jwt
+│   ├── oauth2
+│   └── user
+├── service
+└── util
+```
+
+---
