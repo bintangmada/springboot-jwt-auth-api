@@ -115,3 +115,15 @@ com.bintang.jwt.auth
 ```
 
 ---
+
+# 🔑 Token Strategy
+
+## Access Token
+- Short lifetime
+- Used for API authorization
+- Sent via Authorization header
+
+Example:
+```
+Authorization: Bearer <access_token>
+```
