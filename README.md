@@ -82,3 +82,15 @@ A role contains multiple permissions.
 Permission controls access to API endpoints.
 
 ---
+
+## 🔗 Final User Authorities
+
+Final permissions are calculated from:
+
+Role Permissions
++ Direct User Permissions  
+= Effective Authorities
+
+Permissions are loaded during authentication in CustomUserDetailsService.
+
+---
