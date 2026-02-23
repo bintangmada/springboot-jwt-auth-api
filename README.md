@@ -151,3 +151,23 @@ Purpose:
 - Restrict token access to backend only
 
 ---
+
+# 🧬 Database Model
+
+Main tables:
+
+```
+users
+roles
+permissions
+
+user_roles
+role_permissions
+user_permissions
+refresh_tokens
+```
+
+User does NOT need direct permissions at registration.  
+Permissions are automatically inherited from assigned roles.
+
+---
