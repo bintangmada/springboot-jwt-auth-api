@@ -202,3 +202,15 @@ Custom exceptions:
 - ConflictException
 - BadRequestException
 - UnauthorizedException
+
+Standard error response:
+
+```json
+{
+  "timestamp": "2025-01-01T00:00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Error message",
+  "path": "/api/example"
+}
+```
