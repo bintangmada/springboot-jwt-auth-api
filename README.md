@@ -186,3 +186,10 @@ Entities are automatically filtered using:
 ```java
 @Where(clause = "is_deleted = false")
 ```
+
+Benefits:
+- Data recovery capability
+- Audit history tracking
+- Compliance friendly design
+
+---
