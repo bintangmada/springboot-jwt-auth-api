@@ -193,3 +193,12 @@ Benefits:
 - Compliance friendly design
 
 ---
+
+# ⚠️ Global Error Handling
+
+Custom exceptions:
+
+- ResourceNotFoundException
+- ConflictException
+- BadRequestException
+- UnauthorizedException
