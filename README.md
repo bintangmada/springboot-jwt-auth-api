@@ -180,3 +180,9 @@ All entities include:
 - deleted_at
 - deleted_by
 - status
+
+Entities are automatically filtered using:
+
+```java
+@Where(clause = "is_deleted = false")
+```
