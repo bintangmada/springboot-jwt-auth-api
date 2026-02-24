@@ -171,3 +171,12 @@ User does NOT need direct permissions at registration.
 Permissions are automatically inherited from assigned roles.
 
 ---
+
+# 🧹 Soft Delete Strategy
+
+All entities include:
+
+- is_deleted
+- deleted_at
+- deleted_by
+- status
