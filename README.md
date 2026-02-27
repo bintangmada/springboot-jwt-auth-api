@@ -214,3 +214,27 @@ Standard error response:
   "path": "/api/example"
 }
 ```
+
+---
+
+# 🧾 API Endpoints
+
+## Authentication
+
+### Register
+POST /api/auth/register
+
+### Login
+POST /api/auth/login
+
+Response:
+```json
+{
+  "accessToken": "jwt-token"
+}
+```
+
+Refresh token is automatically stored in cookie.
+
+---
+
