@@ -238,3 +238,12 @@ Refresh token is automatically stored in cookie.
 
 ---
 
+### Refresh Access Token
+POST /api/auth/refresh-token
+
+---
+
+### Logout
+POST /api/auth/logout
+
+---
