@@ -247,3 +247,49 @@ POST /api/auth/refresh-token
 POST /api/auth/logout
 
 ---
+
+# ⚙️ Technology Stack
+
+- Java 17+
+- Spring Boot
+- Spring Security
+- Spring Data JPA
+- JWT
+- Hibernate
+- Lombok
+- MySQL / PostgreSQL
+
+---
+
+# ▶️ Running the Project
+
+## 1. Clone repository
+```
+git clone <repository-url>
+```
+
+## 2. Configure database in application.properties
+
+## 3. Run application
+```
+mvn spring-boot:run
+```
+
+---
+
+# 💼 Portfolio Highlights
+
+This project demonstrates:
+
+- Enterprise authentication architecture
+- JWT + Refresh Token security strategy
+- RBAC implementation
+- Secure REST API design
+- Spring Security expertise
+
+---
+
+# 👨‍💻 Author
+
+Bintang Mada  
+Backend Developer — Java & Spring Boot
