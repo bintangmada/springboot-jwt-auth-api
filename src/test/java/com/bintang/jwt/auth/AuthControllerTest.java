@@ -3,6 +3,7 @@ package com.bintang.jwt.auth;
 import com.bintang.jwt.auth.controller.AuthController;
 import com.bintang.jwt.auth.dto.auth.AuthResult;
 import com.bintang.jwt.auth.dto.auth.LoginRequest;
+import com.bintang.jwt.auth.exception.UnauthorizedException;
 import com.bintang.jwt.auth.security.jwt.JwtUtil;
 import com.bintang.jwt.auth.service.AuthService;
 import com.bintang.jwt.auth.service.RefreshTokenService;
@@ -68,6 +69,20 @@ public class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").value("access-token"));
+    }
+
+    @Test
+    void login_failed_invalid_credentials() throws Exception {
+        LoginRequest request = new LoginRequest("user@mail.com", "wrong-password");
+
+        Mockito.when(authService.login(any()))
+                .thenThrow(new UnauthorizedException("Invalid email or password"));
+
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("Invalid email or password"));
     }
 
 }
