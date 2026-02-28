@@ -85,4 +85,18 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value("Invalid email or password"));
     }
 
+    @Test
+    void login_failed_unauthorized() throws Exception {
+        LoginRequest request = new LoginRequest("user@mail.com", "wrong-password");
+
+        Mockito.when(authService.login(any()))
+                .thenThrow(new UnauthorizedException("Email atau password salah"));
+
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("Email atau password salah"));
+    }
+
 }
