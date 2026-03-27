@@ -1,4 +1,7 @@
 # 🔐 Spring Boot JWT Authentication API
+
+[![Java CI with Maven](https://github.com/bintangmada/springboot-jwt-auth-api/actions/workflows/ci.yml/badge.svg)](https://github.com/bintangmada/springboot-jwt-auth-api/actions/workflows/ci.yml)
+
 Production-Ready Authentication & Authorization System  
 Built with Spring Security, JWT, Refresh Token, RBAC, and Soft Delete Strategy
 
@@ -263,15 +266,34 @@ POST /api/auth/logout
 
 # ▶️ Running the Project
 
-## 1. Clone repository
+## Option A: Using Docker (Recommended for quick testing)
+
+You don't need to install Java or PostgreSQL locally to test this API.
+
+1. Install Docker & Docker Compose
+2. Run the following command in the project root:
+```bash
+docker-compose up -d --build
 ```
+3. The API will be available at `http://localhost:8080`
+
+> **Note:** The database will be automatically seeded with a default Admin account on startup:
+> - **Email:** `admin@example.com`
+> - **Password:** `admin123`
+
+---
+
+## Option B: Manual Setup (For Development)
+
+### 1. Clone repository
+```bash
 git clone <repository-url>
 ```
 
-## 2. Configure database in application.properties
+### 2. Configure PostgreSQL database in `application.properties`
 
-## 3. Run application
-```
+### 3. Run application
+```bash
 mvn spring-boot:run
 ```
 
