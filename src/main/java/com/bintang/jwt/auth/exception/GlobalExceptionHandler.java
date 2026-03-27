@@ -4,6 +4,7 @@ import com.bintang.jwt.auth.dto.exception.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -44,6 +45,23 @@ public class GlobalExceptionHandler {
         return buildError(
                 ex.getMessage(),
                 HttpStatus.UNAUTHORIZED,
+                request
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(
+            MethodArgumentNotValidException ex,
+            HttpServletRequest request
+    ) {
+        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("Validation failed");
+
+        return buildError(
+                errorMessage,
+                HttpStatus.BAD_REQUEST,
                 request
         );
     }
