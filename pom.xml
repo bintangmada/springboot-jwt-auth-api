@@ -121,6 +121,15 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.12</version>
+				<configuration>
+					<excludes>
+						<exclude>com/bintang/jwt/auth/config/**</exclude>
+						<exclude>com/bintang/jwt/auth/security/oauth2/**</exclude>
+						<exclude>com/bintang/jwt/auth/entity/**</exclude>
+						<exclude>com/bintang/jwt/auth/dto/**</exclude>
+						<exclude>com/bintang/jwt/auth/*Application.class</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
