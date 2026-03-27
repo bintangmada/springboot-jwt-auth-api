@@ -5,6 +5,7 @@ import com.bintang.jwt.auth.dto.auth.LoginRequest;
 import com.bintang.jwt.auth.dto.user.RegisterRequest;
 import com.bintang.jwt.auth.security.jwt.JwtUtil;
 import com.bintang.jwt.auth.service.AuthService;
+import com.bintang.jwt.auth.service.RateLimitingService;
 import com.bintang.jwt.auth.service.RefreshTokenService;
 import com.bintang.jwt.auth.util.CookieUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +15,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import io.github.bucket4j.Bucket;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,26 +32,32 @@ class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private AuthService authService;
 
-    @MockBean
+    @MockitoBean
     private RefreshTokenService refreshTokenService;
 
-    @MockBean
+    @MockitoBean
     private JwtUtil jwtUtil;
 
-    @MockBean
+    @MockitoBean
     private CookieUtil cookieUtil;
 
-    @MockBean
+    @MockitoBean
     private UserDetailsService userDetailsService;
+
+    @MockitoBean
+    private RateLimitingService rateLimitingService;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
+        Bucket mockBucket = Mockito.mock(Bucket.class);
+        Mockito.when(mockBucket.tryConsume(1)).thenReturn(true);
+        Mockito.when(rateLimitingService.resolveBucket(any())).thenReturn(mockBucket);
     }
 
     @Test
@@ -102,6 +110,24 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    void login_WithTooManyRequests_ShouldReturn429() throws Exception {
+        // Arrange
+        Bucket mockBucket = Mockito.mock(Bucket.class);
+        Mockito.when(mockBucket.tryConsume(1)).thenReturn(false); // Simulasi token bucket habis
+        Mockito.when(rateLimitingService.resolveBucket(any())).thenReturn(mockBucket);
+
+        LoginRequest request = new LoginRequest();
+        request.setEmail("hacker@example.com");
+        request.setPassword("password123");
+
+        // Act & Assert
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isTooManyRequests());
     }
 
 }
