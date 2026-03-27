@@ -130,4 +130,38 @@ class AuthControllerTest {
                 .andExpect(status().isTooManyRequests());
     }
 
+    @Test
+    void refreshToken_WithValidToken_ShouldReturnNewTokens() throws Exception {
+        com.bintang.jwt.auth.dto.auth.RefreshTokenRequest request = new com.bintang.jwt.auth.dto.auth.RefreshTokenRequest();
+        request.setRefreshToken("valid-refresh-token");
+
+        com.bintang.jwt.auth.entity.RefreshToken mockToken = new com.bintang.jwt.auth.entity.RefreshToken();
+        mockToken.setToken("valid-refresh-token");
+        com.bintang.jwt.auth.entity.User mockUser = new com.bintang.jwt.auth.entity.User();
+        mockUser.setId(1L);
+        mockUser.setEmail("user@example.com");
+        mockToken.setUser(mockUser);
+
+        Mockito.when(refreshTokenService.findByToken("valid-refresh-token")).thenReturn(mockToken);
+        Mockito.when(jwtUtil.generateToken(any())).thenReturn("new-access-token");
+
+        mockMvc.perform(post("/auth/refresh-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").value("new-access-token"))
+                .andExpect(jsonPath("$.refreshToken").value("valid-refresh-token"));
+    }
+
+    @Test
+    void logout_ShouldClearCookies() throws Exception {
+        Mockito.when(cookieUtil.extractRefreshTokenFromCookie(any())).thenReturn("valid-refresh-token");
+
+        mockMvc.perform(post("/auth/logout"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Logout success"));
+
+        Mockito.verify(refreshTokenService).delete("valid-refresh-token");
+        Mockito.verify(cookieUtil).clearRefreshTokenCookie(any());
+    }
 }
