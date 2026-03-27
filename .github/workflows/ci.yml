@@ -1,0 +1,39 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "dev-bintang-m", "main", "master" ]
+  pull_request:
+    branches: [ "dev-bintang-m", "main", "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Ensure mvnw is executable
+      run: chmod +x mvnw
+        
+    - name: Build and Test with Maven
+      # Jalankan test, pastikan test default tidak error (kita sengaja allow failure bila test belum sempurna)
+      run: ./mvnw clean test
+      
+    - name: Generate JaCoCo Coverage Report
+      run: ./mvnw jacoco:report
+      
+    - name: Upload coverage reports to Codecov (Opsional tapi keren)
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }} # (Opsional)
+        directory: target/site/jacoco
+        fail_ci_if_error: false
