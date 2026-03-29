@@ -68,7 +68,7 @@ public class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").value("access-token"));
+                .andExpect(jsonPath("$.accessgit statusToken").value("access-token"));
     }
 
     @Test
